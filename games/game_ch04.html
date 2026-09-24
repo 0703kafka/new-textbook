@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第4章 架构拼装车间</title>
+<style>
+:root{--bg:#0E2F3A;--teal:#0F6E8C;--accent:#F27A4E;--gold:#E0A82E;--ink:#EAF2F4;--line:#1c4a5a;}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+.wrap{max-width:920px;margin:0 auto;padding:22px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:#9fc2cf;font-size:14px;margin-bottom:14px}
+.panel{background:#0c2731;border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0}
+.panel h2{font-size:16px;margin:0 0 10px;color:var(--gold)}
+.hint{font-size:13px;color:#9fc2cf;margin-bottom:10px}
+.card{background:#103a47;border:1px solid var(--line);border-radius:10px;padding:9px 12px;cursor:pointer;user-select:none;font-size:14px}
+.card:hover{border-color:var(--accent)}
+.card.sel{outline:2px solid var(--accent);background:#15414f}
+.card.placed{opacity:.4;pointer-events:none}
+.layers{display:flex;flex-direction:column;gap:10px}
+.layer{border:1px solid var(--line);border-radius:10px;padding:10px;background:#0a2029}
+.layer b{color:var(--gold);font-size:14px}
+.layer .drop{min-height:42px;margin-top:6px;display:flex;gap:8px;flex-wrap:wrap}
+.layer.bad{animation:shake .3s;border-color:#e0563f}
+.layer.right{border-color:var(--gold)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.pool{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.feedback{font-size:13px;min-height:18px;margin-top:8px;color:var(--accent)}
+.badge{display:none;text-align:center;padding:16px;background:#103a47;border:1px solid var(--gold);border-radius:12px;margin-top:10px;color:var(--gold);font-size:17px}
+.badge.show{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>🏗️ 第4章 · 架构拼装车间</h1>
+<div class="sub">把模块卡拖到正确的架构层，拼出一座智能体的「分层架构」。</div>
+<div class="panel">
+  <h2>模块卡（点击选中，再点目标层）</h2>
+  <div class="pool" id="pool"></div>
+  <div class="feedback" id="fb"></div>
+</div>
+<div class="panel">
+  <h2>智能体架构（5 层）</h2>
+  <div class="layers" id="layers"></div>
+</div>
+<div class="badge" id="badge">🏅 架构出厂！分层清晰才能扛住变化</div>
+</div>
+<script>
+var mods=[{n:"摄像头",layer:"输入层"},{n:"LLM 大模型",layer:"认知层"},{n:"发消息",layer:"行动层"},{n:"向量数据库",layer:"记忆层"},{n:"API 工具",layer:"工具层"}];
+var layers=["输入层","认知层","行动层","记忆层","工具层"];
+var pool=document.getElementById("pool"),L=document.getElementById("layers"),fb=document.getElementById("fb");
+var sel=null,done=0;
+mods.slice().sort(function(){return Math.random()-0.5}).forEach(function(m){
+  var c=document.createElement("div");c.className="card";c.textContent=m.n;c.dataset.n=m.n;c.dataset.layer=m.layer;
+  c.onclick=function(){if(c.classList.contains("placed"))return;if(sel)sel.classList.remove("sel");sel=c;c.classList.add("sel");};
+  pool.appendChild(c);
+});
+layers.forEach(function(ln){
+  var d=document.createElement("div");d.className="layer";d.dataset.l=ln;
+  d.innerHTML="<b>"+ln+"</b><div class='drop'></div>";
+  d.onclick=function(){
+    if(!sel)return;
+    if(d.dataset.l===sel.dataset.layer){
+      var chip=document.createElement("span");chip.className="card";chip.textContent=sel.dataset.n;chip.style.cursor="default";
+      d.querySelector(".drop").appendChild(chip);d.classList.add("right");sel.classList.add("placed");sel.classList.remove("sel");sel=null;done++;fb.textContent="✓ 放对了";if(done===mods.length)document.getElementById("badge").classList.add("show");
+    }else{d.classList.add("bad");setTimeout(function(){d.classList.remove("bad");},300);fb.textContent="✗ 这个模块不该在『"+ln+"』，再想想它的职责";}
+  };
+  L.appendChild(d);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第1章 智能体养成闯关</title>
+<style>
+:root{--bg:#0E2F3A;--teal:#0F6E8C;--accent:#F27A4E;--gold:#E0A82E;--ink:#EAF2F4;--line:#1c4a5a;}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+.wrap{max-width:900px;margin:0 auto;padding:22px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:#9fc2cf;font-size:14px;margin-bottom:14px}
+.steps{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.step{font-size:13px;padding:5px 12px;border-radius:20px;background:#0c2731;border:1px solid var(--line);color:#9fc2cf}
+.step.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+.step.done{background:var(--gold);color:#10212a;border-color:var(--gold)}
+.panel{background:#0c2731;border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0}
+.panel h2{font-size:16px;margin:0 0 10px;color:var(--gold)}
+.hint{font-size:13px;color:#9fc2cf;margin-bottom:10px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.card{background:#103a47;border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;user-select:none;transition:.15s;font-size:14px}
+.card:hover{border-color:var(--accent)}
+.card.sel{outline:2px solid var(--accent);background:#15414f}
+.card.ok{opacity:.45;pointer-events:none}
+.slot{background:#0a2029;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;min-width:200px;flex:1;font-size:14px}
+.slot.filled{background:#103a47;border-style:solid}
+.slot.bad{animation:shake .3s;border-color:#e0563f}
+.slot b{color:var(--gold)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.order{min-height:48px;display:flex;gap:8px;align-items:center}
+.zone{background:#0a2029;border:1px solid var(--line);border-radius:10px;padding:14px;text-align:center;cursor:pointer;flex:1;font-size:14px}
+.zone.found{background:#103a47;border-color:var(--gold);color:var(--gold)}
+.btn{background:var(--accent);color:#10212a;border:0;border-radius:8px;padding:9px 16px;font-size:14px;cursor:pointer;font-weight:600}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.badge{display:none;text-align:center;padding:20px;background:#103a47;border:1px solid var(--gold);border-radius:12px;margin-top:12px;font-size:18px;color:var(--gold)}
+.badge.show{display:block}
+.feedback{font-size:13px;min-height:18px;margin-top:8px;color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>🤖 第1章 · 智能体养成闯关</h1>
+<div class="sub">用三关搞懂：智能体是什么 / 怎么转 / 在哪搭（感知—决策—行动循环 + Coze 三区）</div>
+<div class="steps">
+  <div class="step on" id="s1">① 能力配对</div>
+  <div class="step" id="s2">② 循环排序</div>
+  <div class="step" id="s3">③ Coze 寻宝</div>
+</div>
+
+<div class="panel" id="p1">
+  <h2>第 1 关 · 能力配对</h2>
+  <div class="hint">点击下方「能力卡」，再点右侧对应的「描述槽」完成匹配。配错会闪红。</div>
+  <div class="row" id="pool1"></div>
+  <div class="row" id="slots1" style="margin-top:10px"></div>
+  <div class="feedback" id="fb1"></div>
+</div>
+
+<div class="panel" id="p2" style="display:none">
+  <h2>第 2 关 · 循环排序</h2>
+  <div class="hint">依次点击卡片，排出正确顺序：感知 → 决策 → 行动。排错可「重置」。</div>
+  <div class="row" id="pool2"></div>
+  <div class="order" id="order2" style="margin-top:10px;border:1px dashed var(--line);border-radius:10px;padding:10px"></div>
+  <div class="feedback" id="fb2"></div>
+  <button class="btn" id="reset2" style="margin-top:8px">重置</button>
+</div>
+
+<div class="panel" id="p3" style="display:none">
+  <h2>第 3 关 · Coze 寻宝</h2>
+  <div class="hint">点击下方 Coze 界面里的三个关键区域：<b>人设</b> / <b>技能</b> / <b>工作流</b>。</div>
+  <div class="row">
+    <div class="zone" data-z="人设">🧭 人设（Persona）</div>
+    <div class="zone" data-z="技能">🛠 技能（Skills）</div>
+    <div class="zone" data-z="工作流">🔗 工作流（Workflow）</div>
+  </div>
+  <div class="feedback" id="fb3"></div>
+</div>
+
+<div class="badge" id="badge">🏅 养成成功！你已理解智能体的能力与运转方式</div>
+</div>
+
+<script>
+// ---- 第1关 能力配对 ----
+var abilities=[{n:"感知",d:"通过摄像头/麦克风等获取外界信息"},{n:"决策",d:"基于知识与目标判断下一步动作"},{n:"行动",d:"调用工具或发消息，作用于环境"},{n:"记忆",d:"存储对话与用户画像，供后续使用"}];
+var pool1=document.getElementById("pool1"),slots1=document.getElementById("slots1"),fb1=document.getElementById("fb1");
+var selA=null,done1=0;
+abilities.slice().sort(function(){return Math.random()-0.5}).forEach(function(a){
+  var c=document.createElement("div");c.className="card";c.textContent=a.n;c.dataset.n=a.n;
+  c.onclick=function(){if(c.classList.contains("ok"))return;if(selA)selA.classList.remove("sel");selA=c;c.classList.add("sel");};
+  pool1.appendChild(c);
+});
+abilities.forEach(function(a){
+  var s=document.createElement("div");s.className="slot";s.dataset.answer=a.n;s.innerHTML="<b>"+a.n+"</b>："+a.d;
+  s.onclick=function(){
+    if(s.classList.contains("filled")||!selA){return;}
+    if(s.dataset.answer===selA.dataset.n){s.classList.add("filled");selA.classList.add("ok");selA.classList.remove("sel");selA=null;done1++;fb1.textContent="✓ 匹配正确";if(done1===4)pass(1);}
+    else{s.classList.add("bad");setTimeout(function(){s.classList.remove("bad");},300);fb1.textContent="✗ 再想想：这个能力对应哪句描述？";}
+  };
+  slots1.appendChild(s);
+});
+// ---- 第2关 循环排序 ----
+var loop=["感知","决策","行动"],pool2=document.getElementById("pool2"),order2=document.getElementById("order2"),fb2=document.getElementById("fb2");
+var placed=[];
+loop.slice().sort(function(){return Math.random()-0.5}).forEach(function(n){
+  var c=document.createElement("div");c.className="card";c.textContent=n;c.dataset.n=n;
+  c.onclick=function(){if(c.classList.contains("ok"))return;placed.push(n);c.classList.add("ok");addOrder(n);if(placed.length===3)checkLoop();};
+  pool2.appendChild(c);
+});
+function addOrder(n){var t=document.createElement("span");t.className="card";t.textContent=n;t.style.cursor="default";order2.appendChild(t);}
+document.getElementById("reset2").onclick=function(){placed=[];order2.innerHTML="";Array.prototype.forEach.call(pool2.children,function(c){c.classList.remove("ok");});fb2.textContent="";};
+function checkLoop(){if(placed.join(">")==="感知>决策>行动"){fb2.textContent="✓ 正确！感知→决策→行动 是智能体的基本运转循环";pass(2);}else{fb2.textContent="✗ 顺序不对，点『重置』重排（应为 感知→决策→行动）";}}
+// ---- 第3关 Coze 寻宝 ----
+var found3=0;
+Array.prototype.forEach.call(document.querySelectorAll("#p3 .zone"),function(z){
+  z.onclick=function(){if(z.classList.contains("found"))return;z.classList.add("found");found3++;document.getElementById("fb3").textContent="已找到："+found3+"/3";if(found3===3)pass(3);};
+});
+// ---- 进度控制 ----
+function pass(n){
+  document.getElementById("s"+n).classList.remove("on");document.getElementById("s"+n).classList.add("done");
+  if(n<3){document.getElementById("p"+n).style.display="none";document.getElementById("p"+(n+1)).style.display="block";document.getElementById("s"+(n+1)).classList.add("on");}
+  else{document.getElementById("badge").classList.add("show");}
+}
+</script>
+</body>
+</html>

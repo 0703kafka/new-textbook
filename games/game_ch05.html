@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第5章 提示词炼金坊</title>
+<style>
+:root{--bg:#0E2F3A;--teal:#0F6E8C;--accent:#F27A4E;--gold:#E0A82E;--ink:#EAF2F4;--line:#1c4a5a;}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+.wrap{max-width:920px;margin:0 auto;padding:22px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:#9fc2cf;font-size:14px;margin-bottom:14px}
+.panel{background:#0c2731;border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0}
+.panel h2{font-size:16px;margin:0 0 10px;color:var(--gold)}
+.grid{display:flex;gap:16px;flex-wrap:wrap}
+.col{flex:1;min-width:280px}
+.field{margin:8px 0}
+.field label{font-size:13px;color:#9fc2cf;display:block;margin-bottom:3px}
+.field input{width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0a2029;color:var(--ink);font-size:14px}
+.qbar{height:10px;background:#0a2029;border-radius:6px;overflow:hidden;margin:8px 0}
+.qbar>i{display:block;height:100%;background:var(--gold);width:0;transition:.2s}
+.prev{background:#0a2029;border:1px solid var(--gold);border-radius:10px;padding:12px;font-size:14px;white-space:pre-wrap;min-height:200px}
+.btn{background:var(--accent);color:#10212a;border:0;border-radius:8px;padding:9px 16px;font-size:14px;cursor:pointer;font-weight:600;margin-top:8px}
+.feedback{font-size:13px;min-height:18px;margin-top:8px;color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>⚗️ 第5章 · 提示词炼金坊</h1>
+<div class="sub">左侧填五要素，右侧实时拼出提示词；要素越全，「炼金纯度」越高。</div>
+<div class="panel">
+  <div class="grid">
+    <div class="col">
+      <h2>提示词五要素</h2>
+      <div class="field"><label>角色（Role）</label><input id="f1" placeholder="你是……"></div>
+      <div class="field"><label>任务（Task）</label><input id="f2" placeholder="你要……"></div>
+      <div class="field"><label>上下文（Context）</label><input id="f3" placeholder="依据……"></div>
+      <div class="field"><label>格式（Format）</label><input id="f4" placeholder="输出形式……"></div>
+      <div class="field"><label>约束（Constraint）</label><input id="f5" placeholder="不许……"></div>
+      <div class="qbar"><i id="qb"></i></div>
+      <div class="feedback" id="fb">纯度：0% — 填得越全，bot 越懂你</div>
+      <button class="btn" id="copy">复制提示词</button>
+    </div>
+    <div class="col">
+      <h2>实时预览</h2>
+      <div class="prev" id="pv"># 在左侧填写，这里会实时拼出提示词……</div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+var ids=["f1","f2","f3","f4","f5"],names=["角色","任务","上下文","格式","约束"];
+function render(){
+  var filled=0,txt="# 提示词规格\n";
+  ids.forEach(function(id,i){var v=document.getElementById(id).value.trim();if(v){filled++;txt+=names[i]+"："+v+"\n";}});
+  var pct=Math.round(filled/ids.length*100);
+  document.getElementById("qb").style.width=pct+"%";
+  document.getElementById("pv").textContent=filled?txt:"# 在左侧填写，这里会实时拼出提示词……";
+  document.getElementById("fb").textContent="纯度："+pct+"% — "+(filled===ids.length?"完整！可直接喂给智能体":"继续补全要素");
+}
+ids.forEach(function(id){document.getElementById(id).addEventListener("input",render);});
+document.getElementById("copy").onclick=function(){
+  var txt=document.getElementById("pv").textContent;
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){document.getElementById("fb").textContent="✓ 已复制";});}
+  else{document.getElementById("fb").textContent="请手动选中复制";}
+};
+render();
+</script>
+</body>
+</html>

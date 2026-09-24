@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第8章 积木搭建台</title>
+<style>
+:root{--bg:#0E2F3A;--teal:#0F6E8C;--accent:#F27A4E;--gold:#E0A82E;--ink:#EAF2F4;--line:#1c4a5a;}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+.wrap{max-width:920px;margin:0 auto;padding:22px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:#9fc2cf;font-size:14px;margin-bottom:14px}
+.panel{background:#0c2731;border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0}
+.panel h2{font-size:16px;margin:0 0 10px;color:var(--gold)}
+.hint{font-size:13px;color:#9fc2cf;margin-bottom:10px}
+.card{background:#103a47;border:1px solid var(--line);border-radius:10px;padding:10px 14px;cursor:pointer;user-select:none;font-size:14px}
+.card:hover{border-color:var(--accent)}
+.card.in{outline:2px solid var(--gold);background:#15414f}
+.chain{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:10px;min-height:50px;border:1px dashed var(--line);border-radius:10px;padding:10px}
+.chain .node{background:#15414f;border:1px solid var(--teal);border-radius:8px;padding:8px 12px;font-size:14px}
+.arrow{color:var(--gold)}
+.btn{background:var(--accent);color:#10212a;border:0;border-radius:8px;padding:9px 16px;font-size:14px;cursor:pointer;font-weight:600;margin-top:8px;margin-right:8px}
+.feedback{font-size:13px;min-height:18px;margin-top:8px;color:var(--accent)}
+.badge{display:none;text-align:center;padding:16px;background:#103a47;border:1px solid var(--gold);border-radius:12px;margin-top:10px;color:var(--gold);font-size:17px}
+.badge.show{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>🧩 第8章 · 低代码搭建擂台</h1>
+<div class="sub">用积木拼出应用的数据流：从「触发」一路连到「消息」，中间必须过「大模型」。</div>
+<div class="panel">
+  <h2>积木库（依次点击，串成一条链路）</h2>
+  <div class="hint">有效链路：触发 → … → 大模型 → … → 消息（知识库可选增强）</div>
+  <div class="chain" id="pool"></div>
+  <div style="margin-top:10px"><b style="color:#9fc2cf;font-size:13px">已搭建链路：</b></div>
+  <div class="chain" id="chain"></div>
+  <div class="feedback" id="fb"></div>
+  <button class="btn" id="check">上线检查</button>
+  <button class="btn" id="reset">重置</button>
+</div>
+<div class="badge" id="badge">🚀 应用已上线！链路从触发贯通到消息</div>
+</div>
+<script>
+var nodes=["触发","知识库","大模型","工作流","消息"];
+var pool=document.getElementById("pool"),chain=document.getElementById("chain"),fb=document.getElementById("fb");
+var path=[];
+nodes.slice().sort(function(){return Math.random()-0.5}).forEach(function(n){
+  var c=document.createElement("div");c.className="card";c.textContent=n;c.dataset.n=n;
+  c.onclick=function(){if(c.classList.contains("in"))return;path.push(n);c.classList.add("in");addNode(n);};
+  pool.appendChild(c);
+});
+function addNode(n){if(chain.children.length){{var a=document.createElement("span");a.className="arrow";a.textContent="→";chain.appendChild(a);}}var nd=document.createElement("span");nd.className="node";nd.textContent=n;chain.appendChild(nd);}
+document.getElementById("reset").onclick=function(){path=[];chain.innerHTML="";Array.prototype.forEach.call(pool.children,function(c){c.classList.remove("in");});fb.textContent="";};
+document.getElementById("check").onclick=function(){
+  if(path.length<3){fb.textContent="✗ 链路太短，至少 触发→大模型→消息";return;}
+  var ok=path[0]==="触发"&&path[path.length-1]==="消息"&&path.indexOf("大模型")>-1;
+  if(ok){fb.textContent="✓ 链路有效：从触发贯通到消息，且经过大模型";document.getElementById("badge").classList.add("show");}
+  else{fb.textContent="✗ 无效：必须以『触发』开头、『消息』结尾，且经过『大模型』";}
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第2章 可行性四维度法庭</title>
+<style>
+:root{--bg:#0E2F3A;--teal:#0F6E8C;--accent:#F27A4E;--gold:#E0A82E;--ink:#EAF2F4;--line:#1c4a5a;}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+.wrap{max-width:900px;margin:0 auto;padding:22px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:#9fc2cf;font-size:14px;margin-bottom:14px}
+.panel{background:#0c2731;border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0}
+.panel h2{font-size:16px;margin:0 0 10px;color:var(--gold)}
+.case{background:#0a2029;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:14px;margin-bottom:14px}
+.dim{margin:12px 0}
+.dim label{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px}
+.dim .val{color:var(--gold);font-weight:600}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.bar{height:8px;background:#0a2029;border-radius:6px;overflow:hidden;margin-top:4px}
+.bar>i{display:block;height:100%;background:var(--teal)}
+.btn{background:var(--accent);color:#10212a;border:0;border-radius:8px;padding:9px 16px;font-size:14px;cursor:pointer;font-weight:600;margin-top:6px}
+.verdict{margin-top:14px;padding:14px;border-radius:10px;font-size:15px;display:none}
+.verdict.show{display:block}
+.verdict.go{background:#103a47;border:1px solid var(--gold);color:var(--gold)}
+.verdict.no{background:#2a1410;border:1px solid #e0563f;color:#f0a48f}
+.weak{margin:6px 0 0;padding-left:18px;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>⚖️ 第2章 · 可行性四维度法庭</h1>
+<div class="sub">就一个智能体立项提案，从 技术 / 经济 / 操作 / 法律 四个维度打分，看该不该上。</div>
+<div class="panel">
+  <h2>立项提案</h2>
+  <div class="case">「用扣子 Coze 为校图书馆搭建『借还问答智能体』：读者用自然语言问『我的书啥时候还』，bot 查借阅系统并回答；涉及读者证号等个人信息。」</div>
+  <div class="dim" data-k="技术" data-th="60">
+    <label>技术可行性（技术是否成熟、能否实现）<span class="val">50</span></label>
+    <input type="range" min="0" max="100" value="50"><div class="bar"><i style="width:50%"></i></div>
+  </div>
+  <div class="dim" data-k="经济" data-th="60">
+    <label>经济可行性（成本是否合理、有收益）<span class="val">50</span></label>
+    <input type="range" min="0" max="100" value="50"><div class="bar"><i style="width:50%"></i></div>
+  </div>
+  <div class="dim" data-k="操作" data-th="60">
+    <label>操作可行性（师生是否易用、流程是否顺）<span class="val">50</span></label>
+    <input type="range" min="0" max="100" value="50"><div class="bar"><i style="width:50%"></i></div>
+  </div>
+  <div class="dim" data-k="法律" data-th="60">
+    <label>法律可行性（隐私合规、授权是否到位）<span class="val">50</span></label>
+    <input type="range" min="0" max="100" value="50"><div class="bar"><i style="width:50%"></i></div>
+  </div>
+  <button class="btn" id="eval">评估是否立项</button>
+  <div class="verdict" id="vd"></div>
+</div>
+</div>
+<script>
+var dims=document.querySelectorAll(".dim");
+dims.forEach(function(d){
+  var r=d.querySelector("input"),v=d.querySelector(".val"),b=d.querySelector(".bar>i");
+  r.oninput=function(){v.textContent=r.value;b.style.width=r.value+"%";};
+});
+document.getElementById("eval").onclick=function(){
+  var weak=[],allok=true;
+  dims.forEach(function(d){
+    var sc=+d.querySelector("input").value,th=+d.dataset.th,k=d.dataset.k;
+    if(sc<th){allok=false;weak.push(k+"（"+sc+"分，低于门槛"+th+"）");}
+  });
+  var vd=document.getElementById("vd");vd.className="verdict show";
+  if(allok){vd.classList.add("go");vd.innerHTML="✅ <b>建议立项</b>：四个维度均达到门槛，可行。";}
+  else{vd.classList.add("no");vd.innerHTML="⚠️ <b>建议暂缓</b>：以下维度偏弱，需先补齐——<div class='weak'>"+weak.map(function(w){return "• "+w;}).join("<br>")+"</div>提示：法律维度常因『读者隐私授权』不到位而拖后腿。";}
+};
+</script>
+</body>
+</html>

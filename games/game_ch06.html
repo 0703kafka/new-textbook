@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第6章 记忆迷宫</title>
+<style>
+:root{--bg:#0E2F3A;--teal:#0F6E8C;--accent:#F27A4E;--gold:#E0A82E;--ink:#EAF2F4;--line:#1c4a5a;}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+.wrap{max-width:920px;margin:0 auto;padding:22px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:#9fc2cf;font-size:14px;margin-bottom:14px}
+.panel{background:#0c2731;border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0}
+.panel h2{font-size:16px;margin:0 0 10px;color:var(--gold)}
+.hint{font-size:13px;color:#9fc2cf;margin-bottom:10px}
+.card{background:#103a47;border:1px solid var(--line);border-radius:10px;padding:9px 12px;cursor:pointer;user-select:none;font-size:14px}
+.card:hover{border-color:var(--accent)}
+.card.sel{outline:2px solid var(--accent);background:#15414f}
+.card.used{opacity:.4;pointer-events:none}
+.banks{display:flex;gap:10px;flex-wrap:wrap}
+.bank{flex:1;min-width:180px;border:1px solid var(--line);border-radius:10px;padding:10px;background:#0a2029}
+.bank b{color:var(--gold);font-size:14px;display:block;margin-bottom:6px}
+.bank.bad{animation:shake .3s;border-color:#e0563f}
+.bank .drop{min-height:40px;display:flex;gap:6px;flex-wrap:wrap}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.score{font-size:15px;margin-top:10px;color:var(--gold)}
+.feedback{font-size:13px;min-height:18px;margin-top:8px;color:var(--accent)}
+.multi{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.tag{background:#103a47;border:1px solid var(--line);border-radius:20px;padding:6px 14px;cursor:pointer;font-size:14px}
+.tag.on{background:var(--gold);color:#10212a;border-color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>🧠 第6章 · 记忆迷宫</h1>
+<div class="sub">把信息卡放进正确的记忆库，并给多模态输入贴上通道标签。</div>
+<div class="panel">
+  <h2>① 记忆分类（点卡片 → 点记忆库）</h2>
+  <div class="hint">短期记忆=本次会话；长期记忆=跨会话沉淀；情景记忆=当前任务背景。</div>
+  <div class="banks" id="banks"></div>
+  <div style="margin-top:10px"><b style="color:#9fc2cf;font-size:13px">待分类信息卡：</b></div>
+  <div class="banks" id="pool" style="margin-top:6px"></div>
+  <div class="feedback" id="fb"></div>
+  <div class="score" id="score"></div>
+</div>
+<div class="panel">
+  <h2>② 多模态辨认</h2>
+  <div class="hint">用户发来「一段语音 + 一张课程截图」，它由哪些模态组成？（可多选）</div>
+  <div class="multi" id="multi">
+    <span class="tag" data-m="文本">📝 文本</span>
+    <span class="tag" data-m="图像">🖼 图像</span>
+    <span class="tag" data-m="音频">🎙 音频</span>
+    <span class="tag" data-m="视频">🎬 视频</span>
+  </div>
+  <div class="feedback" id="fb2"></div>
+  <button class="btn" id="chk2">提交判断</button>
+</div>
+</div>
+<script>
+var items=[{t:"本次对话的原话",b:"短期记忆"},{t:"用户画像（专业/年级）",b:"长期记忆"},{t:"当前任务目标",b:"情景记忆"},{t:"历史聊天的摘要",b:"长期记忆"},{t:"刚说的这句话",b:"短期记忆"},{t:"用户偏好设置",b:"长期记忆"}];
+var banks=["短期记忆","长期记忆","情景记忆"];
+var pool=document.getElementById("pool"),B=document.getElementById("banks"),fb=document.getElementById("fb"),score=document.getElementById("score");
+var sel=null,right=0,done=0;
+banks.forEach(function(bn){
+  var d=document.createElement("div");d.className="bank";d.dataset.b=bn;
+  d.innerHTML="<b>"+bn+"</b><div class='drop'></div>";
+  d.onclick=function(){
+    if(!sel)return;
+    if(d.dataset.b===sel.dataset.b){var c=document.createElement("span");c.className="card";c.textContent=sel.dataset.t;c.style.cursor="default";d.querySelector(".drop").appendChild(c);sel.classList.add("used");sel.classList.remove("sel");sel=null;right++;done++;fb.textContent="✓ 正确";}
+    else{d.classList.add("bad");setTimeout(function(){d.classList.remove("bad");},300);fb.textContent="✗ 不该放『"+bn+"』，想想它属于哪种记忆";}
+    if(done===items.length)score.textContent="记忆分类得分："+right+"/"+items.length+(right===items.length?" 🏅 全对！":"");
+  };
+  B.appendChild(d);
+});
+items.slice().sort(function(){return Math.random()-0.5}).forEach(function(it){
+  var c=document.createElement("div");c.className="card";c.textContent=it.t;c.dataset.t=it.t;c.dataset.b=it.b;
+  c.onclick=function(){if(c.classList.contains("used"))return;if(sel)sel.classList.remove("sel");sel=c;c.classList.add("sel");};
+  pool.appendChild(c);
+});
+// 多模态
+var picked={};
+document.querySelectorAll("#multi .tag").forEach(function(t){t.onclick=function(){var m=t.dataset.m;if(picked[m]){delete picked[m];t.classList.remove("on");}else{picked[m]=1;t.classList.add("on");}};});
+document.getElementById("chk2").onclick=function(){
+  var ok=Object.keys(picked).sort().join()==="音频,图像";
+  document.getElementById("fb2").textContent=ok?"✓ 正确：语音=音频，截图=图像（文本/视频不参与）":"✗ 再想想：语音和截图分别对应哪种模态？";
+};
+</script>
+</body>
+</html>
