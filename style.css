@@ -7,55 +7,75 @@
   --dark:#0E2F3A; --teal:#0F6E8C; --teal2:#1497A8; --accent:#F27A4E;
   --gold:#E0A82E; --light:#F2F7F8; --card:#FFFFFF; --ink:#1B2B32;
   --mute:#5A6B73; --line:#D5E2E6; --ok:#2E8B57; --bad:#C0392B;
+  --bg-1:#ecf9fb; --bg-2:#f8f5ff; --shadow-soft:rgba(15,110,140,.12);
   --maxw:980px;
 }
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
 html,body{margin:0;padding:0}
 body{
+  position:relative; isolation:isolate;
   font-family:"微软雅黑","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
-  color:var(--ink); background:var(--light); line-height:1.85; font-size:16px;
+  color:var(--ink); background:
+    radial-gradient(circle at 10% 10%, rgba(20,151,168,.18), transparent 22%),
+    radial-gradient(circle at 90% 10%, rgba(242,122,78,.15), transparent 18%),
+    linear-gradient(180deg,var(--bg-1) 0%, var(--bg-2) 34%, #f3f8fb 100%);
+  line-height:1.85; font-size:16px;
 }
+body::before, body::after{
+  content:""; position:fixed; width:32rem; height:32rem; border-radius:50%;
+  filter:blur(72px); opacity:.4; z-index:-1; pointer-events:none; animation:drift 18s ease-in-out infinite alternate;
+}
+body::before{left:-8rem; top:-6rem; background:rgba(20,151,168,.28)}
+body::after{right:-7rem; bottom:-8rem; background:rgba(242,122,78,.22); animation-duration:22s}
+@keyframes drift{from{transform:translate3d(0,0,0) scale(1)} to{transform:translate3d(2.5rem,2rem,0) scale(1.12)}}
 a{color:var(--teal); text-decoration:none}
 a:hover{text-decoration:underline}
 .wrap{max-width:var(--maxw); margin:0 auto; padding:0 22px}
 
 /* ---------- 顶部条 ---------- */
-.topbar{background:linear-gradient(120deg,var(--dark),var(--teal)); color:#fff;
-  padding:10px 0; position:sticky; top:0; z-index:50; box-shadow:0 2px 10px rgba(14,47,58,.18)}
+.topbar{background:linear-gradient(135deg, rgba(14,47,58,.96), rgba(15,110,140,.9)); color:#fff;
+  padding:10px 0; position:sticky; top:0; z-index:50; box-shadow:0 12px 30px rgba(14,47,58,.18); backdrop-filter:blur(12px)}
 .topbar .wrap{display:flex; align-items:center; justify-content:space-between; gap:14px}
 .brand{font-weight:700; letter-spacing:.5px; font-size:15px}
 .brand small{display:block; font-weight:400; opacity:.8; font-size:12px}
-.topbar nav a{color:#eaf4f6; margin-left:16px; font-size:14px}
-.topbar nav a:hover{color:#fff; text-decoration:none}
+.topbar nav a{color:#eaf4f6; margin-left:16px; font-size:14px; transition:.2s ease}
+.topbar nav a:hover{color:#fff; text-decoration:none; transform:translateY(-1px)}
 
 /* ---------- 门户首页 ---------- */
-.hero{background:linear-gradient(120deg,var(--dark),var(--teal));
-  color:#fff; padding:54px 0 46px}
-.hero h1{font-size:30px; margin:0 0 10px}
-.hero p{opacity:.92; max-width:760px; font-size:15.5px}
-.kicker{display:inline-block; font-size:12px; letter-spacing:2px; color:var(--gold);
-  border:1px solid rgba(224,168,46,.5); padding:3px 10px; border-radius:20px; margin-bottom:14px}
+.hero{position:relative; overflow:hidden; background:linear-gradient(135deg,#0b2430 0%,#0b3f52 30%,#0f6e8c 55%,#1497a8 100%);
+  color:#fff; padding:54px 0 46px; box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+.hero::before{content:""; position:absolute; inset:-30% -10% auto auto; width:34rem; height:34rem; border-radius:50%; background:radial-gradient(circle, rgba(255,255,255,.18), transparent 60%); transform:translateZ(0)}
+.hero::after{content:""; position:absolute; inset:auto auto -10% -12%; width:28rem; height:28rem; border-radius:50%; background:radial-gradient(circle, rgba(242,122,78,.18), transparent 58%)}
+.hero .wrap{position:relative; z-index:1}
+.hero h1{font-size:30px; margin:0 0 10px; letter-spacing:.5px; text-shadow:0 8px 24px rgba(0,0,0,.18)}
+.hero p{opacity:.94; max-width:760px; font-size:15.5px; text-shadow:0 2px 10px rgba(0,0,0,.12)}
+.kicker{display:inline-block; font-size:12px; letter-spacing:2px; color:#ffe7a8;
+  background:rgba(255,255,255,.06); border:1px solid rgba(224,168,46,.45); padding:4px 12px; border-radius:999px; margin-bottom:14px; box-shadow:0 0 0 1px rgba(255,255,255,.05) inset}
 .section-title{font-size:21px; color:var(--dark); margin:38px 0 14px;
-  border-left:5px solid var(--accent); padding-left:12px}
+  border-left:5px solid var(--accent); padding-left:12px; letter-spacing:.3px}
 .grid9{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
-.ch-card{background:var(--card); border:1px solid var(--line); border-radius:12px;
-  padding:16px 16px 14px; transition:.18s; position:relative; overflow:hidden}
-.ch-card:hover{box-shadow:0 6px 20px rgba(15,110,140,.15); transform:translateY(-2px)}
+.ch-card{background:linear-gradient(180deg,#fff,#f6fbfd); border:1px solid rgba(15,110,140,.12); border-radius:16px;
+  padding:16px 16px 14px; transition:.22s ease; position:relative; overflow:hidden; box-shadow:0 10px 24px rgba(15,110,140,.05)}
+.ch-card::before{content:""; position:absolute; inset:0 0 auto 0; height:4px; background:linear-gradient(90deg,var(--teal),var(--accent),var(--gold)); transform:scaleX(0); transform-origin:left; transition:transform .25s ease}
+.ch-card:hover{box-shadow:0 16px 28px rgba(15,110,140,.16); transform:translateY(-5px); border-color:rgba(15,110,140,.18)}
+.ch-card:hover::before{transform:scaleX(1)}
 .ch-card .no{font-size:13px; color:var(--teal); font-weight:700}
 .ch-card h3{margin:6px 0 8px; font-size:16px; color:var(--dark)}
 .ch-card p{font-size:13px; color:var(--mute); margin:0}
-.ch-card.ready{border-color:var(--teal2)}
+.ch-card.ready{border-color:rgba(20,151,168,.25)}
 .ch-card.ready::after{content:"✓ 可阅读"; position:absolute; top:10px; right:10px;
-  font-size:11px; color:#fff; background:var(--teal2); padding:2px 8px; border-radius:10px}
+  font-size:11px; color:#fff; background:linear-gradient(135deg,var(--teal2),#2ab8c0); padding:2px 8px; border-radius:10px; box-shadow:0 8px 18px rgba(20,151,168,.24)}
 .ch-card.soon::after{content:"建设中"; position:absolute; top:10px; right:10px;
-  font-size:11px; color:var(--mute); background:var(--light); padding:2px 8px; border-radius:10px}
+  font-size:11px; color:var(--mute); background:rgba(242,247,248,.85); padding:2px 8px; border-radius:10px}
 .feature-list{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:8px}
-.feature{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px}
+.feature{background:linear-gradient(180deg,#fff 0%, #f8fbfd 100%); border:1px solid rgba(15,110,140,.08); border-radius:14px; padding:14px 16px; box-shadow:0 10px 20px rgba(15,110,140,.04); transition:all .2s ease}
+.feature:hover{transform:translateY(-2px); box-shadow:0 14px 22px rgba(15,110,140,.08)}
 .feature b{color:var(--teal)}
-.note{background:#fff; border:1px dashed var(--line); border-left:4px solid var(--gold);
-  border-radius:8px; padding:14px 16px; color:var(--mute); font-size:14px; margin-top:14px}
-.progress-shell{height:14px; background:var(--line); border-radius:8px; overflow:hidden; margin:10px 0 4px}
-.progress-fill{height:100%; width:0; background:linear-gradient(90deg,var(--teal),var(--teal2)); transition:.5s}
+.note{background:linear-gradient(135deg,#fffdf7,#fffaf0); border:1px dashed rgba(224,168,46,.45); border-left:4px solid var(--gold);
+  border-radius:10px; padding:14px 16px; color:var(--mute); font-size:14px; margin-top:14px; box-shadow:0 8px 16px rgba(224,168,46,.05)}
+.progress-shell{height:14px; background:rgba(15,110,140,.08); border:1px solid rgba(15,110,140,.08); border-radius:999px; overflow:hidden; margin:10px 0 4px; box-shadow:inset 0 1px 3px rgba(0,0,0,.04)}
+.progress-fill{height:100%; width:0; background:linear-gradient(90deg,var(--teal),var(--teal2),var(--accent)); transition:.5s; border-radius:999px; box-shadow:0 0 12px rgba(20,151,168,.3)}
 .progress-txt{font-size:13px; color:var(--mute)}
 
 /* ---------- 章节页布局 ---------- */
