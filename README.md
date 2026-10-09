@@ -38,3 +38,5 @@
 git status
 git diff --check
 ```
+
+推送到 `main` 后，GitHub Actions 会自动发布站点。
