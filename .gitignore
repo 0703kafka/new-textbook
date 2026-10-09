@@ -18,5 +18,4 @@ Thumbs.db
 desktop.ini
 *~
 
-# 说明：本仓库刻意保留 chNN.html、index.html、appendix.html、style.css、app.js、
-# images/、media/、*.docx、*.md、*.pptx 以及 数字教材_离线版.zip（均为站点内容）。
+# 说明：本仓库刻意保留教材网页、互动练习及其资源，以及课程文档。
