@@ -80,7 +80,7 @@ git diff --check
 | 罗琳 | — |
 | 肖昳霖 | — |
 | 江文欣 | — |
-| 刘雨霏 | — |
+| 刘雨霏 | [MIAgitup](https://github.com/MIAgitup) |
 | 王檬缘 | — |
 | 甘宇涵 | — |
 | 李子妍 | — |
