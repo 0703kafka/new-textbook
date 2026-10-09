@@ -13,9 +13,9 @@
 | [`pages/appendix.html`](pages/appendix.html) | 课程附录正文（根目录 `appendix.html` 保留旧链接跳转） |
 | [`style.css`](style.css)、[`app.js`](app.js) | 全站样式与交互 |
 | [`images/`](images/)、[`media/`](media/) | 教材配图、操作截图与案例素材 |
-| [`前沿文献_候选清单.md`](前沿文献_候选清单.md)、[`AI蓝皮书.md`](AI蓝皮书.md) | 补充阅读资料 |
-| [`智能体创新实践汇编_案例提取.md`](智能体创新实践汇编_案例提取.md)、[`pages/智能体创新实践汇编_思维导图.html`](pages/智能体创新实践汇编_思维导图.html) | 智能体案例资料 |
-| [`职业与资格速查表.docx`](职业与资格速查表.docx) | 职业与资格参考 |
+| [`media/前沿文献_候选清单.md`](media/前沿文献_候选清单.md)、[`media/AI蓝皮书.md`](media/AI蓝皮书.md) | 补充阅读资料 |
+| [`media/智能体创新实践汇编_案例提取.md`](media/智能体创新实践汇编_案例提取.md)、[`pages/智能体创新实践汇编_思维导图.html`](pages/智能体创新实践汇编_思维导图.html) | 智能体案例资料 |
+| [`media/职业与资格速查表.docx`](media/职业与资格速查表.docx) | 职业与资格参考 |
 
 ## 使用
 
